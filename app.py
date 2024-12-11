@@ -1,41 +1,40 @@
-import pyshark
-from pychart import theme, axis, line_plot, area, canvas, legend, chart_object
+from scapy.all import rdpcap
+import matplotlib.pyplot as plt
+from pathlib import Path
 
-# Load PCAP file using pyshark
-pcap_file = 'example.pcap'  # Replace with your PCAP file
-cap = pyshark.FileCapture(pcap_file)
+# Correct the file path
+pcap_file = Path(r'Thesis Data\attendence 30min.pcap')
 
-# Extract timestamps and packet numbers
-timestamps = []
+# Load the PCAP file
+packets = rdpcap(str(pcap_file))
+
+# Extract timestamps and calculate time intervals
+time_intervals = []
 packet_numbers = []
 
-for index, packet in enumerate(cap):
-    timestamps.append(float(packet.sniff_timestamp))  # Convert timestamp to float
-    packet_numbers.append(index + 1)
+last_time = None  # Store the last packet timestamp
 
-cap.close()
+for index, packet in enumerate(packets):
+    if hasattr(packet, 'time'):  # Check if the packet has a timestamp
+        current_time = packet.time  # Current packet timestamp
+        if last_time is not None:
+            time_intervals.append(current_time - last_time)  # Calculate time interval
+            packet_numbers.append(index)  # Packet number
+        last_time = current_time  # Update the last time
 
-# Prepare the data
-data = list(zip(packet_numbers, timestamps))
+# Plot the time intervals between packets
+plt.figure(figsize=(10, 6))
+plt.plot(packet_numbers, time_intervals, marker='o', linestyle='-', label="Time Interval (s)")
 
-# Configure PyChart theme
-theme.use_color = 1
-theme.default_font_size = 14
-theme.reinitialize()
+# Add labels, title, and legend
+plt.xlabel("Packet Number")
+plt.ylabel("Time Interval (seconds)")
+plt.title("Time Intervals Between Packets")
+plt.legend()
+plt.grid(True)
 
-# Create a chart area
-chart_area = area.T(
-    x_coord=axis.X(label="Packet Number", format="%d"),
-    y_coord=axis.Y(label="Timestamp (s)", format="%.2f"),
-    legend=legend.T(),
-)
+# Save and show the plot
+plt.savefig("time_intervals_plot.png")
+plt.show()
 
-# Add a line plot
-chart_area.add_plot(line_plot.T(label="Packet Timestamps", data=data))
-
-# Draw the chart
-canvas.init("time_plot.png")
-chart_area.draw()
-canvas.finish()
-
-print("Time plot saved as 'time_plot.png'")
+print("Plot saved as 'time_intervals_plot.png'")
