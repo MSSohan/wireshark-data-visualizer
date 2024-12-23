@@ -49,6 +49,9 @@ if __name__ == "__main__":
         "Smart Plug": (r"ThesisData\OpenWRT\smart_plug_software.pcap.csv", 3),
     }
 
+    # Create a mapping of labels to device names
+    label_to_device = {label: device for device, (_, label) in labeled_device_files.items()}
+
     # Combine datasets for training
     combined_data = pd.DataFrame()
     for device, (file, label) in labeled_device_files.items():
@@ -76,11 +79,14 @@ if __name__ == "__main__":
 
     # Evaluate on test set
     y_pred = model.predict(X_test)
+    y_test_device_names = [label_to_device[label] for label in y_test]
+    y_pred_device_names = [label_to_device[label] for label in y_pred]
+
     print("\nClassification Report:\n")
-    print(classification_report(y_test, y_pred))
+    print(classification_report(y_test_device_names, y_pred_device_names, target_names=list(label_to_device.values())))
 
     # Load the test data (multi-device)
-    test_data_file = r"ThesisData\OpenWRT\att_sent_1_15.pcap.csv"
+    test_data_file = r"ThesisData\OpenWRT\sent_2_15_1_hour.pcap.csv"
     test_data = pd.read_csv(test_data_file)
 
     # Preprocess test data
