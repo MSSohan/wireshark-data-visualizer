@@ -1,4 +1,6 @@
 import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
@@ -43,10 +45,18 @@ if __name__ == "__main__":
 
     # Normal traffic files for individual devices (each device gets a label)
     labeled_device_files = {
-        "Online Attendance": (r"ThesisData\OpenWRT\att_sent_2_15_1_hour.pcap.csv", 0),
-        "Sentry": (r"ThesisData\OpenWRT\sent_2_15_1_hour.pcap.csv", 1),
-        "Uprint": (r"ThesisData\OpenWRT\uprint_dec_15_1.pcap.csv", 2),
+        "Sentry": (r"ThesisData\OpenWRT\sent_2_15_1_hour.pcap.csv", 0),
+        "Uprint": (r"ThesisData\OpenWRT\uprint_dec_15_1.pcap.csv", 1),
+        "Online Attendance": (r"ThesisData\OpenWRT\att_sent_2_15_1_hour.pcap.csv", 2),
         "Smart Plug": (r"ThesisData\OpenWRT\smart_plug_software.pcap.csv", 3),
+        "Amazon Plug": (r"ThesisData\OnlineData\AmazonplugBT.pcap.csv", 4),
+        "Breast Cancer Detector": (r"ThesisData\OnlineData\breast-cancer.csv", 5),
+        "Baby Activity Monitoring": (r"ThesisData\OnlineData\baby_activity_monitoring_records.csv", 6),
+        "Surveillance Camera": (r"ThesisData\OnlineData\Surveillance_Camera.csv", 7),
+        "Netatmo Weather Station": (r"ThesisData\OnlineData\NetatmoWeatherStationBT.pcap.csv", 8),
+        "Traffic Accident Prediction": (r"ThesisData\OnlineData\dataset_traffic_accident_prediction1.csv", 9),
+        "Smoke Detector": (r"ThesisData\OnlineData\smoke.csv", 10),
+        "Pollution Detector": (r"ThesisData\OnlineData\updated_pollution_dataset.csv", 11),
     }
 
     # Create a mapping of labels to device names
@@ -83,10 +93,10 @@ if __name__ == "__main__":
     y_pred_device_names = [label_to_device[label] for label in y_pred]
 
     print("\nClassification Report:\n")
-    print(classification_report(y_test_device_names, y_pred_device_names, target_names=list(label_to_device.values())))
+    # print(classification_report(y_test_device_names, y_pred_device_names, target_names=list(label_to_device.values())))
 
     # Load the test data (multi-device)
-    test_data_file = r"ThesisData\OpenWRT\sent_2_15_1_hour.pcap.csv"
+    test_data_file = r"ThesisData\OpenWRT\sent_dec_15_1.pcap.csv"
     test_data = pd.read_csv(test_data_file)
 
     # Preprocess test data
@@ -110,3 +120,34 @@ if __name__ == "__main__":
     # Determine the best matching device
     best_match_device = max(matching_percentages, key=matching_percentages.get)
     print(f"\nBest Matching Device: {best_match_device} ({matching_percentages[best_match_device]:.2f}%)")
+
+# Generate gradient colors based on matching percentages
+def generate_gradient_colors(percentages):
+    # Define a gradient from blue (low) to green (high)
+    cmap = LinearSegmentedColormap.from_list("gradient", ["blue", "cyan", "green"])
+    return [cmap(percentage / 100) for percentage in percentages]
+
+# Plot matching percentages as a bar chart
+plt.figure(figsize=(10, 6))
+devices = list(matching_percentages.keys())
+percentages = list(matching_percentages.values())
+
+# Generate gradient colors based on percentages
+colors = generate_gradient_colors(percentages)
+
+bars = plt.bar(devices, percentages, color=colors)
+
+# Add percentages on top of each bar
+for bar, percentage in zip(bars, percentages):
+    plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), 
+             f"{percentage:.2f}%", 
+             ha='center', va='bottom', fontsize=8, color='black', fontweight='bold')
+
+plt.ylim(0, 100)
+plt.title("Matching Percentages by Device", fontsize=12)
+plt.xlabel("Device", fontsize=11)
+plt.ylabel("Matching Percentage (%)", fontsize=11)
+plt.xticks(rotation=70, fontsize=8)
+plt.tight_layout()
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+plt.show()
