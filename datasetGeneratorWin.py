@@ -11,6 +11,7 @@ def split_pcap_by_mac(input_pcap, basename, output_dir, excluded_mac=None):
 
     # Dictionary to group packets by MAC address
     mac_packets = {}
+    individual_pcaps = []
 
     for packet in packets:
         if Ether in packet:
@@ -25,9 +26,11 @@ def split_pcap_by_mac(input_pcap, basename, output_dir, excluded_mac=None):
     for mac, packet_list in mac_packets.items():
         output_file = os.path.join(output_dir, f"{basename}_{mac.replace(':', '_')}.pcap")
         wrpcap(output_file, packet_list)
+        individual_pcaps.append(output_file)
         print(f"Saved {len(packet_list)} packets for MAC {mac} to {output_file}")
     
     print("PCAP splitting complete!")
+    return individual_pcaps
 
 def pcap_to_csv(pcap_file, csv_file):
     try:
@@ -68,33 +71,26 @@ def pcap_to_csv(pcap_file, csv_file):
     except Exception as e:
         print(f"Error processing {pcap_file}: {e}")
 
-def batch_convert_pcap_to_csv(input_dir, output_dir):
+def batch_convert_pcap_to_csv(pcap_files, output_dir):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    pcap_files = [f for f in os.listdir(input_dir) if f.endswith(".pcap")]
-
-    if not pcap_files:
-        print("No PCAP files found in the input directory.")
-        return
-
     for pcap_file in pcap_files:
-        input_path = os.path.join(input_dir, pcap_file)
-        output_path = os.path.join(output_dir, pcap_file.replace(".pcap", ".csv"))
-        pcap_to_csv(input_path, output_path)
+        output_path = os.path.join(output_dir, os.path.basename(pcap_file).replace(".pcap", ".csv"))
+        pcap_to_csv(pcap_file, output_path)
 
 def main(input_pcap, individual_pcap_directory, csv_directory, excluded_mac=None):
-    # Split the input PCAP file by MAC address
+    # Split the input PCAP file by MAC address and get the list of individual PCAP files
     basename = os.path.splitext(os.path.basename(input_pcap))[0]
-    split_pcap_by_mac(input_pcap, basename, individual_pcap_directory, excluded_mac)
+    individual_pcaps = split_pcap_by_mac(input_pcap, basename, individual_pcap_directory, excluded_mac)
 
-    # Batch convert all PCAP files in the directory to CSV
-    batch_convert_pcap_to_csv(individual_pcap_directory, csv_directory)
+    # Batch convert the individual PCAP files to CSV
+    batch_convert_pcap_to_csv(individual_pcaps, csv_directory)
 
 if __name__ == "__main__":
     # Change these paths as needed
-    input_pcap_file = r"ThesisData\OpenWRT\att_sent_uprint_15_1.pcap"  # Replace with your main PCAP file path
-    individual_pcap_directory = r"ThesisData\output"  # Replace with the folder containing PCAP files
+    input_pcap_file = r"ThesisData\OpenWRT\smart_plug_software.pcap"  # Replace with your main PCAP file path
+    individual_pcap_directory = r"ThesisData\indiv_pcap_dir"  # Replace with the folder containing PCAP files
     csv_directory = r"ThesisData\csv_files"  # Replace with the folder for saving output files
     excluded_mac_address = "d4:6e:0e:76:ef:10"  # Replace with MAC to exclude, if any
 
