@@ -39,11 +39,20 @@ def pcap_to_csv(pcap_file, csv_file):
 
         for packet in packets:
             if Ether in packet:
+                # Initialize a row with default values
                 row = {
-                    "Timestamp": packet.time,
-                    "Source MAC": packet[Ether].src,
-                    "Destination MAC": packet[Ether].dst,
-                    "Packet Length": len(packet),
+                    "Timestamp": packet.time if hasattr(packet, 'time') else 0.0,
+                    "Source MAC": packet[Ether].src if hasattr(packet[Ether], 'src') else "0.0",
+                    "Destination MAC": packet[Ether].dst if hasattr(packet[Ether], 'dst') else "0.0",
+                    "Packet Length": len(packet) if packet else 0.0,
+                    "Source IP": "0.0",
+                    "Destination IP": "0.0",
+                    "Protocol": 0.0,
+                    "Source Port": 0.0,
+                    "Destination Port": 0.0,
+                    "TTL": 0.0,  # Time-to-live
+                    "Window Size": 0.0,  # TCP Window Size
+                    "Checksum": 0.0,  # IP/TCP/UDP checksum
                 }
 
                 # Check for IP layer and associated fields
@@ -51,14 +60,19 @@ def pcap_to_csv(pcap_file, csv_file):
                     row["Source IP"] = packet[IP].src
                     row["Destination IP"] = packet[IP].dst
                     row["Protocol"] = packet[IP].proto
+                    row["TTL"] = packet[IP].ttl if hasattr(packet[IP], 'ttl') else 0.0
+                    row["Checksum"] = packet[IP].chksum if hasattr(packet[IP], 'chksum') else 0.0
 
-                    # Check for TCP or UDP and extract ports
-                    if TCP in packet:
-                        row["Source Port"] = packet[TCP].sport
-                        row["Destination Port"] = packet[TCP].dport
-                    elif UDP in packet:
-                        row["Source Port"] = packet[UDP].sport
-                        row["Destination Port"] = packet[UDP].dport
+                # Check for TCP or UDP and extract ports and specific fields
+                if TCP in packet:
+                    row["Source Port"] = packet[TCP].sport
+                    row["Destination Port"] = packet[TCP].dport
+                    row["Window Size"] = packet[TCP].window if hasattr(packet[TCP], 'window') else 0.0
+                    row["Checksum"] = packet[TCP].chksum if hasattr(packet[TCP], 'chksum') else 0.0
+                elif UDP in packet:
+                    row["Source Port"] = packet[UDP].sport
+                    row["Destination Port"] = packet[UDP].dport
+                    row["Checksum"] = packet[UDP].chksum if hasattr(packet[UDP], 'chksum') else 0.0
 
                 # Add the row to the data list
                 data.append(row)
@@ -89,7 +103,7 @@ def main(input_pcap, individual_pcap_directory, csv_directory, excluded_mac=None
 
 if __name__ == "__main__":
     # Change these paths as needed
-    input_pcap_file = r"ThesisData\OpenWRT\smart_plug_software.pcap"  # Replace with your main PCAP file path
+    input_pcap_file = r"ThesisData\fahim\dec_8_sentry.pcap"  # Replace with your main PCAP file path
     individual_pcap_directory = r"ThesisData\indiv_pcap_dir"  # Replace with the folder containing PCAP files
     csv_directory = r"ThesisData\csv_files"  # Replace with the folder for saving output files
     excluded_mac_address = "d4:6e:0e:76:ef:10"  # Replace with MAC to exclude, if any
