@@ -57,7 +57,7 @@ if __name__ == "__main__":
         "Sentry": (r"ThesisData\csv_files\att_sent_uprint_15_1_84_f3_eb_0d_7f_2e.csv", 0),
         "Uprint": (r"ThesisData\csv_files\att_sent_uprint_15_1_b8_27_eb_d7_50_f4.csv", 1),
         "Online Attendance": (r"ThesisData\csv_files\att_sent_uprint_15_1_9c_9c_1f_0c_88_68.csv", 2),
-        "Smart Plug": (r"ThesisData\OpenWRT\smart_plug_software.pcap.csv", 3),
+        "Smart Plug": (r"ThesisData\csv_files\smart_plug_software_3c_f8_62_d4_99_eb.csv", 3),
         "Amazon Plug": (r"ThesisData\OnlineData\AmazonplugBT.pcap.csv", 4),
         "Breast Cancer Detector": (r"ThesisData\OnlineData\breast-cancer.csv", 5),
         "Baby Activity Monitoring": (r"ThesisData\OnlineData\baby_activity_monitoring_records.csv", 6),
@@ -116,30 +116,37 @@ if __name__ == "__main__":
     ))
 
     # Load the test data (multi-device)
-    test_data_file = r"ThesisData\OnlineData\breast-cancer.csv"
+    test_data_file = r"ThesisData\csv_files\att_sent_uprint_15_1_b8_27_eb_d7_50_f4.csv"
     test_data = pd.read_csv(test_data_file)
 
     # Preprocess test data
     test_data_clean = test_data.dropna(subset=feature_columns)
     X_test_data = preprocess_data(test_data_clean, feature_columns, label_column=None, preprocessor=preprocessor)[0]
     
-    # Predict labels for test data
-    y_pred_test = model.predict(X_test_data)
+    # Detect anomalies as attacks
+    attacks = detect_anomalies(X_test_data, model, threshold=0.5)
+    if any(attacks):
+        print("\nAnomalous behavior (attack) detected!")
 
-    # Calculate matching percentages
+    # Calculate matching percentages for known devices
     matching_percentages = {}
+    threshold = 0.9  # Confidence threshold for a match
+
     for device, (_, label) in labeled_device_files.items():
-        total = len(y_pred_test)
-        matching = sum(1 for pred in y_pred_test if pred == label)
+        total = X_test_data.shape[0]  # Change here to use shape[0] instead of len()
+        matching = sum(1 for pred in model.predict(X_test_data) if pred == label)
         matching_percentages[device] = (matching / total) * 100
 
     # Output matching percentages
     for device, percentage in matching_percentages.items():
         print(f"{device}: {percentage:.2f}% normal matching probability")
 
-    # Determine the best matching device
-    best_match_device = max(matching_percentages, key=matching_percentages.get)
-    print(f"\nBest Matching Device: {best_match_device} ({matching_percentages[best_match_device]:.2f}%)")
+    # Determine the best matching device, considering only confident matches
+    if all(percent < threshold * 100 for percent in matching_percentages.values()):
+        print("\nUnknown device detected!")
+    else:
+        best_match_device = max(matching_percentages, key=matching_percentages.get)
+        print(f"\nBest Matching Device: {best_match_device} ({matching_percentages[best_match_device]:.2f}%)")
 
     # Plot matching percentages
     def generate_gradient_colors(percentages):
