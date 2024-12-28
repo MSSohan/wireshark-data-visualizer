@@ -136,7 +136,7 @@ if __name__ == "__main__":
     ))
 
     # Load the test data (multi-device)
-    test_data_file = r"ThesisData\csv_files\uprint 30min_b8_27_eb_82_05_a1.csv"
+    test_data_file = r"ThesisData\csv_files\sentry1_hour_30_11_50_02_91_c9_4b_b5.csv"
     test_data = pd.read_csv(test_data_file)
 
     # Preprocess test data
@@ -198,7 +198,7 @@ if __name__ == "__main__":
 
     plt.ylim(0, 104)
     plt.title("Matching Percentages by Device", fontsize=12)
-    plt.xlabel("Device", fontsize=11)
+    plt.xlabel("IoT Device", fontsize=11)
     plt.ylabel("Matching Percentage (%)", fontsize=11)
     plt.xticks(rotation=70, fontsize=8)
     plt.tight_layout()
