@@ -73,7 +73,7 @@ if __name__ == "__main__":
         "Sentry": (r"ThesisData\csv_files\att_sent_uprint_15_1_84_f3_eb_0d_7f_2e.csv", 0),
         "Uprint": (r"ThesisData\csv_files\att_sent_uprint_15_1_b8_27_eb_d7_50_f4.csv", 1),
         "Online Attendance": (r"ThesisData\csv_files\att_sent_uprint_15_1_9c_9c_1f_0c_88_68.csv", 2),
-        "Smart Plug": (r"ThesisData\csv_files\smart_plug_software_3c_f8_62_d4_99_eb.csv", 3),
+        "Smart Plug": (r"ThesisData\csv_files\smart_plug_software_40_4c_ca_f9_83_fc.csv", 3),
         "Alexa Eco Dot": (r"ThesisData\csv_files\Amazon Alexa Eco Dot 1 BT_1c_fe_2b_98_16_dd.csv", 4),
         "Amazon Plug": (r"ThesisData\csv_files\Amazon plug BT_b8_5f_98_d0_76_e6.csv", 5),
         "Baby Activity Monitoring": (r"ThesisData\csv_files\baby_activity_monitoring_records_dc_a6_32_dc_27_d5.csv", 6),
@@ -136,7 +136,7 @@ if __name__ == "__main__":
     ))
 
     # Load the test data (multi-device)
-    test_data_file = r"ThesisData\csv_files\sentry1_hour_30_11_50_02_91_c9_4b_b5.csv"
+    test_data_file = r"ThesisData\csv_files\smart_plug_software_3c_f8_62_d4_99_eb.csv"
     test_data = pd.read_csv(test_data_file)
 
     # Preprocess test data
