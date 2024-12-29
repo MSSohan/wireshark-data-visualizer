@@ -1,12 +1,17 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 from matplotlib.colors import LinearSegmentedColormap
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.compose import ColumnTransformer
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.ensemble import IsolationForest  # For anomaly detection
+import tkinter as tk
+from tkinter import filedialog
+from tkinter import messagebox
 
 
 def preprocess_data(df, feature_columns, label_column, preprocessor=None):
@@ -57,6 +62,19 @@ def detect_attack(X_test_data, anomaly_detector):
     anomaly_predictions = anomaly_detector.predict(X_test_data)
     return any(anomaly_predictions == -1)  # If any sample is anomalous, classify as attack
 
+# Tkinter File Picker Function
+def select_file():
+    root = tk.Tk()
+    root.withdraw()  # Hide the root window
+    file_path = filedialog.askopenfilename(
+        title="Select Test Data File",
+        filetypes=[("CSV Files", "*.csv"), ("All Files", "*.*")]
+    )
+    if not file_path:
+        messagebox.showinfo("No File Selected", "Please select a valid test data file.")
+        return None
+    return file_path
+
 
 if __name__ == "__main__":
     # Define feature columns
@@ -81,8 +99,7 @@ if __name__ == "__main__":
         "Amazon Smart Board": (r"ThesisData\csv_files\Smart Board  BT_00_02_75_f6_e3_cb.csv", 8),
         "Amazon Smart TV": (r"ThesisData\csv_files\LG SMART TV BT_ac_f1_08_4e_00_82.csv", 9),
         "Surveillance Camera": (r"ThesisData\csv_files\Surveillance_Camera_b0_c5_54_59_2e_99.csv", 10),
-
-        "Netatmo Weather Station": (r"ThesisData\OnlineData\NetatmoWeatherStationBT.pcap.csv", 11),
+        "Netatmo Weather Station": (r"ThesisData\csv_files\Netatmo Weather Station BT1_70_ee_50_6b_a8_1a.csv", 11),
         "Traffic Accident Prediction": (r"ThesisData\OnlineData\dataset_traffic_accident_prediction1.csv", 12),
         "Smoke Detector": (r"ThesisData\OnlineData\smoke.csv", 13),
         "Pollution Detector": (r"ThesisData\OnlineData\updated_pollution_dataset.csv", 14),
@@ -115,7 +132,7 @@ if __name__ == "__main__":
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Train classifier
-    model = RandomForestClassifier(n_estimators=500, random_state=42)
+    model = RandomForestClassifier(n_estimators=500, random_state=42, n_jobs=-1)
     model.fit(X_train, y_train)
 
     # Evaluate on the test set
@@ -136,8 +153,14 @@ if __name__ == "__main__":
     ))
 
     # Load the test data (multi-device)
-    test_data_file = r"ThesisData\csv_files\smart_plug_software_3c_f8_62_d4_99_eb.csv"
-    test_data = pd.read_csv(test_data_file)
+    test_file_path = r"ThesisData\csv_files\Netatmo Weather Station BT1_70_ee_50_6b_a8_1a.csv"
+
+     # File selection for test data
+    # test_file_path = select_file()
+    # if not test_file_path:
+    #     exit()
+
+    test_data = pd.read_csv(test_file_path)
 
     # Preprocess test data
     test_data_clean = test_data.dropna(subset=feature_columns)
@@ -203,4 +226,49 @@ if __name__ == "__main__":
     plt.xticks(rotation=70, fontsize=8)
     plt.tight_layout()
     plt.grid(axis='y', linestyle='--', alpha=0.7)
+    # plt.show()
+
+
+    #Confusion Matrix
+
+    # Compute confusion matrix
+    cm = confusion_matrix(y_test, y_pred, labels=model.classes_)
+
+    # Map labels to device names
+    device_names = [label_to_device[label] for label in model.classes_]
+
+    # Create a plot with a custom background and color scheme
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=device_names)
+    fig, ax = plt.subplots(figsize=(10, 6))  # Define the figure size (width, height) in inches
+    disp.plot(cmap='OrRd', xticks_rotation=80, ax=ax)
+
+    # Customize font sizes for device names
+    plt.xticks(fontsize=8)  # Adjust x-axis label font size
+    plt.yticks(fontsize=8)  # Adjust y-axis label font size
+
+    plt.title("Confusion Matrix")
+    plt.tight_layout()  # Ensure labels fit within the plot
+    # plt.show()
+
+
+    # Plotting Classification Report
+    # Generate the classification report as a dictionary
+    report = classification_report(y_test, y_pred, target_names=device_names, output_dict=True)
+
+    # Convert the classification report dictionary to a DataFrame
+    report_df = pd.DataFrame(report).transpose()
+
+    # Drop the "accuracy" row to make the heatmap cleaner
+    if "accuracy" in report_df.index:
+        report_df = report_df.drop("accuracy")
+
+    # Plot the classification report as a heatmap
+    plt.figure(figsize=(10, 6))
+    sns.heatmap(report_df, annot=True, fmt=".2f", cmap="YlGnBu", cbar=True, linewidths=0.5)
+
+    # Add title and adjust layout
+    plt.title("Classification Report", fontsize=14)
+    plt.xticks(rotation=45, ha='right', fontsize=10)
+    plt.yticks(fontsize=8)
+    plt.tight_layout()
     plt.show()
