@@ -100,9 +100,7 @@ if __name__ == "__main__":
         "Amazon Smart TV": (r"ThesisData\csv_files\LG SMART TV BT_ac_f1_08_4e_00_82.csv", 9),
         "Surveillance Camera": (r"ThesisData\csv_files\Surveillance_Camera_b0_c5_54_59_2e_99.csv", 10),
         "Netatmo Weather Station": (r"ThesisData\csv_files\Netatmo Weather Station BT1_70_ee_50_6b_a8_1a.csv", 11),
-        "Traffic Accident Prediction": (r"ThesisData\OnlineData\dataset_traffic_accident_prediction1.csv", 12),
-        "Smoke Detector": (r"ThesisData\OnlineData\smoke.csv", 13),
-        "Pollution Detector": (r"ThesisData\OnlineData\updated_pollution_dataset.csv", 14),
+        "Coffee Maker": (r"ThesisData\csv_files\Atomic Coffee maker BT_68_57_2d_56_ac_47.csv", 12),
     }
 
     # Create a mapping of labels to device names
@@ -132,7 +130,7 @@ if __name__ == "__main__":
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Train classifier
-    model = RandomForestClassifier(n_estimators=500, random_state=42, n_jobs=-1)
+    model = RandomForestClassifier(n_estimators=500, random_state=42)
     model.fit(X_train, y_train)
 
     # Evaluate on the test set
@@ -153,7 +151,7 @@ if __name__ == "__main__":
     ))
 
     # Load the test data (multi-device)
-    test_file_path = r"ThesisData\csv_files\Netatmo Weather Station BT1_70_ee_50_6b_a8_1a.csv"
+    test_file_path = r"ThesisData\csv_files\smart_plug_software_40_4c_ca_f9_83_fc.csv"
 
      # File selection for test data
     # test_file_path = select_file()
@@ -204,7 +202,7 @@ if __name__ == "__main__":
         cmap = LinearSegmentedColormap.from_list("gradient", ["blue", "cyan", "green"])
         return [cmap(percentage / 100) for percentage in percentages]
 
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(6, 8))
     devices = list(matching_percentages.keys())
     percentages = list(matching_percentages.values())
 
@@ -220,10 +218,10 @@ if __name__ == "__main__":
                  ha='center', va='bottom', fontsize=8, color='black', fontweight='bold')
 
     plt.ylim(0, 104)
-    plt.title("Matching Percentages by Device", fontsize=12)
-    plt.xlabel("IoT Device", fontsize=11)
-    plt.ylabel("Matching Percentage (%)", fontsize=11)
-    plt.xticks(rotation=70, fontsize=8)
+    plt.title("Device Identification", fontsize=12)
+    plt.xlabel("IoT Device", fontsize=12)
+    plt.ylabel("Matching Percentage (%)", fontsize=12)
+    plt.xticks(rotation=90, fontsize=11)
     plt.tight_layout()
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     # plt.show()
@@ -239,12 +237,12 @@ if __name__ == "__main__":
 
     # Create a plot with a custom background and color scheme
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=device_names)
-    fig, ax = plt.subplots(figsize=(10, 6))  # Define the figure size (width, height) in inches
-    disp.plot(cmap='OrRd', xticks_rotation=80, ax=ax)
+    fig, ax = plt.subplots(figsize=(6, 6))  # Define the figure size (width, height) in inches
+    disp.plot(cmap='OrRd', xticks_rotation=90, ax=ax)
 
     # Customize font sizes for device names
-    plt.xticks(fontsize=8)  # Adjust x-axis label font size
-    plt.yticks(fontsize=8)  # Adjust y-axis label font size
+    plt.xticks(fontsize=10)  # Adjust x-axis label font size
+    plt.yticks(fontsize=10)  # Adjust y-axis label font size
 
     plt.title("Confusion Matrix")
     plt.tight_layout()  # Ensure labels fit within the plot
@@ -263,12 +261,12 @@ if __name__ == "__main__":
         report_df = report_df.drop("accuracy")
 
     # Plot the classification report as a heatmap
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(6, 8))
     sns.heatmap(report_df, annot=True, fmt=".2f", cmap="YlGnBu", cbar=True, linewidths=0.5)
 
     # Add title and adjust layout
     plt.title("Classification Report", fontsize=14)
-    plt.xticks(rotation=45, ha='right', fontsize=10)
-    plt.yticks(fontsize=8)
+    plt.xticks(rotation=0, ha='right', fontsize=12)
+    plt.yticks(fontsize=10)
     plt.tight_layout()
     plt.show()
