@@ -151,7 +151,7 @@ if __name__ == "__main__":
     ))
 
     # Load the test data (multi-device)
-    test_file_path = r"ThesisData\csv_files\smart_plug_software_40_4c_ca_f9_83_fc.csv"
+    test_file_path = r"ThesisData\csv_files\AMCREST WIFI CAMERA BT_9c_8e_cd_1d_ab_9f.csv"
 
      # File selection for test data
     # test_file_path = select_file()
@@ -211,11 +211,16 @@ if __name__ == "__main__":
 
     bars = plt.bar(devices, percentages, color=colors)
 
-    # Add percentages on top of each bar
+    # Add percentages on top of each bar (only for non-zero percentages)
     for bar, percentage in zip(bars, percentages):
-        plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), 
-                 f"{percentage:.2f}%", 
-                 ha='center', va='bottom', fontsize=8, color='black', fontweight='bold')
+        if percentage > 0:  # Only annotate bars with non-zero percentages
+            plt.text(
+                bar.get_x() + bar.get_width() / 2,  # Center text horizontally on the bar
+                bar.get_height(),                  # Place text just above the bar
+                f"{percentage:.2f}%",             # Format percentage with 2 decimal places
+                ha='center', va='bottom',         # Align text
+                fontsize=8, color='black', fontweight='bold'
+            )
 
     plt.ylim(0, 104)
     plt.title("Device Identification", fontsize=12)
