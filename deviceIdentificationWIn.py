@@ -151,7 +151,7 @@ if __name__ == "__main__":
     ))
 
     # Load the test data (multi-device)
-    test_file_path = r"ThesisData\csv_files\AMCREST WIFI CAMERA BT_9c_8e_cd_1d_ab_9f.csv"
+    test_file_path = r"ThesisData\csv_files\dec_3_sentry_50_02_91_c9_4b_b5.csv"
 
      # File selection for test data
     # test_file_path = select_file()
@@ -219,14 +219,14 @@ if __name__ == "__main__":
                 bar.get_height(),                  # Place text just above the bar
                 f"{percentage:.2f}%",             # Format percentage with 2 decimal places
                 ha='center', va='bottom',         # Align text
-                fontsize=8, color='black', fontweight='bold'
+                fontsize=9, color='black', fontweight='bold'
             )
 
     plt.ylim(0, 104)
-    plt.title("Device Identification", fontsize=12)
-    plt.xlabel("IoT Device", fontsize=12)
-    plt.ylabel("Matching Percentage (%)", fontsize=12)
-    plt.xticks(rotation=90, fontsize=11)
+    plt.title("Device Identification", fontsize=14)
+    plt.xlabel("IoT Device", fontsize=13)
+    plt.ylabel("Matching Percentage (%)", fontsize=13)
+    plt.xticks(rotation=90, fontsize=12)
     plt.tight_layout()
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     # plt.show()
@@ -246,8 +246,8 @@ if __name__ == "__main__":
     disp.plot(cmap='OrRd', xticks_rotation=90, ax=ax)
 
     # Customize font sizes for device names
-    plt.xticks(fontsize=10)  # Adjust x-axis label font size
-    plt.yticks(fontsize=10)  # Adjust y-axis label font size
+    plt.xticks(fontsize=12)  # Adjust x-axis label font size
+    plt.yticks(fontsize=12)  # Adjust y-axis label font size
 
     plt.title("Confusion Matrix")
     plt.tight_layout()  # Ensure labels fit within the plot
@@ -272,6 +272,6 @@ if __name__ == "__main__":
     # Add title and adjust layout
     plt.title("Classification Report", fontsize=14)
     plt.xticks(rotation=0, ha='right', fontsize=12)
-    plt.yticks(fontsize=10)
+    plt.yticks(fontsize=12)
     plt.tight_layout()
     plt.show()

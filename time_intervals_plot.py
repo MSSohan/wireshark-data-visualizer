@@ -68,12 +68,20 @@ for i, (pcap_file, label) in enumerate(zip(pcap_files, device_labels)):
     # Plot the time intervals on the right
     ax = fig.add_subplot(grid[i])
     ax.plot(packet_numbers, time_intervals, marker='.', linestyle='', label=label)
-    ax.grid(True)
-    ax.legend(loc='upper right', fontsize=10)
+    ax.grid(False)
+
+    # Customize ticks for packet number (x-axis) and time interval (y-axis)
+    ax.tick_params(axis='x', labelsize=12, labelcolor='black')  # Change font size and color for x-axis (packet numbers)
+    ax.tick_params(axis='y', labelsize=12, labelcolor='black')  # Change font size and color for y-axis (time intervals)
+
+    legend=ax.legend(loc='upper right', fontsize=13, borderpad=0.2, labelspacing=0.2)
+
+    # Customize background and shape
+    legend.get_frame().set_facecolor('lightyellow')  # Change background color
 
 # Add X and Y labels centered for the entire plot
-fig.text(0.5, 0.04, 'Packet Number', ha='center', fontsize=14)
-fig.text(0.04, 0.5, 'Time Interval Between Two Packets (Sec)', va='center', rotation='vertical', fontsize=14)
+fig.text(0.5, 0.04, 'Packet Number', ha='center', fontsize=16)
+fig.text(0.04, 0.5, 'Time Interval Between Two Packets (Sec)', va='center', rotation='vertical', fontsize=16)
 
 # Adjust layout manually
 plt.subplots_adjust(left=0.1, right=0.9, top=0.98, bottom=0.12)
