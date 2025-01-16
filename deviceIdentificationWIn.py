@@ -205,6 +205,7 @@ if __name__ == "__main__":
         return [cmap(percentage / 100) for percentage in percentages]
 
     plt.figure(figsize=(6, 8))
+    # showing device name
     devices = list(matching_percentages.keys())
     percentages = list(matching_percentages.values())
 
