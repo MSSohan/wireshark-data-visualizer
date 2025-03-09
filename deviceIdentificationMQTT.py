@@ -36,7 +36,8 @@ def preprocess_data(df, feature_columns, label_column, preprocessor=None):
         X_transformed = preprocessor.transform(X)
     else:
         # Default preprocessing for training
-        categorical_columns = ['Source MAC', 'Destination MAC', 'Source IP', 'Destination IP', 'Protocol']
+        categorical_columns = [ 'Timestamp', 'TCP Time Delta', 'TCP Flags', 'TCP Segment Length', 'MQTT Message',
+        'MQTT DUP Flag', 'MQTT Message Length', 'MQTT Header Flags', 'MQTT Message ID', 'MQTT QoS','MQTT ConnAck Flags']
         numeric_columns = [col for col in feature_columns if col not in categorical_columns]
         
         numeric_transformer = StandardScaler()
@@ -82,29 +83,33 @@ def select_file():
 
 if __name__ == "__main__":
     # Define feature columns
+    # feature_columns = [
+    #     'Timestamp', 'Source MAC', 'Destination MAC', 'Packet Length', 'Source IP',
+    #     'Destination IP', 'Protocol', 'Source Port', 'Destination Port', 'TTL','Window Size','Checksum'
+    # ]
     feature_columns = [
-        'Timestamp', 'Source MAC', 'Destination MAC', 'Packet Length', 'Source IP',
-        'Destination IP', 'Protocol', 'Source Port', 'Destination Port', 'TTL','Window Size','Checksum'
+        'Timestamp', 'TCP Time Delta', 'TCP Flags', 'TCP Segment Length', 'MQTT Message',
+        'MQTT DUP Flag', 'MQTT Message Length', 'MQTT Header Flags', 'MQTT Message ID', 'MQTT QoS','MQTT ConnAck Flags'
     ]
-    
+
     # Label column (for multi-device classification)
     label_column = 'Label'
 
     # Normal traffic files for individual devices (each device gets a label)
     labeled_device_files = {
-        "Sentry": (r"ThesisData\csv_files\att_sent_uprint_15_1_84_f3_eb_0d_7f_2e.csv", 0),
-        "Uprint": (r"ThesisData\csv_files\att_sent_uprint_15_1_b8_27_eb_d7_50_f4.csv", 1),
-        "Online Attendance": (r"ThesisData\csv_files\att_sent_uprint_15_1_9c_9c_1f_0c_88_68.csv", 2),
-        "Smart Plug": (r"ThesisData\csv_files\smart_plug_software_40_4c_ca_f9_83_fc.csv", 3),
-        "Alexa Eco Dot": (r"ThesisData\csv_files\Amazon Alexa Eco Dot 1 BT_1c_fe_2b_98_16_dd.csv", 4),
-        "Amazon Plug": (r"ThesisData\csv_files\Amazon plug BT_b8_5f_98_d0_76_e6.csv", 5),
-        "Baby Activity Monitoring": (r"ThesisData\csv_files\baby_activity_monitoring_records_dc_a6_32_dc_27_d5.csv", 6),
-        "Breast Cancer Detector": (r"ThesisData\csv_files\Breast_cancer_detector_a0_d0_dc_c4_08_ff.csv", 7),
-        "Amazon Smart Board": (r"ThesisData\csv_files\Smart Board  BT_00_02_75_f6_e3_cb.csv", 8),
-        "Amazon Smart TV": (r"ThesisData\csv_files\LG SMART TV BT_ac_f1_08_4e_00_82.csv", 9),
-        "Surveillance Camera": (r"ThesisData\csv_files\Surveillance_Camera_b0_c5_54_59_2e_99.csv", 10),
-        "Netatmo Weather Station": (r"ThesisData\csv_files\Netatmo Weather Station BT1_70_ee_50_6b_a8_1a.csv", 11),
-        "Coffee Maker": (r"ThesisData\csv_files\Atomic Coffee maker BT_68_57_2d_56_ac_47.csv", 12),
+        # "Sentry": (r"ThesisData\csv_files\att_sent_uprint_15_1_84_f3_eb_0d_7f_2e.csv", 0),
+        # "Uprint": (r"ThesisData\csv_files\att_sent_uprint_15_1_b8_27_eb_d7_50_f4.csv", 1),
+        "Online Attendance": (r"ThesisData\csv_mqtt_tcp_files\att_sent_uprint_15_1_9c_9c_1f_0c_88_68.csv", 2),
+        # "Smart Plug": (r"ThesisData\csv_files\smart_plug_software_40_4c_ca_f9_83_fc.csv", 3),
+        # "Alexa Eco Dot": (r"ThesisData\csv_files\Amazon Alexa Eco Dot 1 BT_1c_fe_2b_98_16_dd.csv", 4),
+        # "Amazon Plug": (r"ThesisData\csv_files\Amazon plug BT_b8_5f_98_d0_76_e6.csv", 5),
+        # "Baby Activity Monitoring": (r"ThesisData\csv_files\baby_activity_monitoring_records_dc_a6_32_dc_27_d5.csv", 6),
+        # "Breast Cancer Detector": (r"ThesisData\csv_files\Breast_cancer_detector_a0_d0_dc_c4_08_ff.csv", 7),
+        # "Amazon Smart Board": (r"ThesisData\csv_files\Smart Board  BT_00_02_75_f6_e3_cb.csv", 8),
+        # "Amazon Smart TV": (r"ThesisData\csv_files\LG SMART TV BT_ac_f1_08_4e_00_82.csv", 9),
+        # "Surveillance Camera": (r"ThesisData\csv_files\Surveillance_Camera_b0_c5_54_59_2e_99.csv", 10),
+        # "Netatmo Weather Station": (r"ThesisData\csv_files\Netatmo Weather Station BT1_70_ee_50_6b_a8_1a.csv", 11),
+        # "Coffee Maker": (r"ThesisData\csv_files\Atomic Coffee maker BT_68_57_2d_56_ac_47.csv", 12),
     }
 
     # Create a mapping of labels to device names
@@ -155,7 +160,7 @@ if __name__ == "__main__":
     ))
 
     # Load the test data (multi-device)
-    test_file_path = r"ThesisData\csv_files\att_sent_uprint_15_1_b8_27_eb_d7_50_f4.csv"
+    test_file_path = r"ThesisData\csv_mqtt_tcp_files\att_sent_uprint_dec_15_2_84_f3_eb_0d_7f_2e.csv"
 
      # File selection for test data
     # test_file_path = select_file()
