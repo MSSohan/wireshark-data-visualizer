@@ -103,7 +103,7 @@ def main(input_pcap, individual_pcap_directory, csv_directory, excluded_mac=None
 
 if __name__ == "__main__":
     # Change these paths as needed
-    input_pcap_file = r"ThesisData\OnlineData\LG SMART TV BT.pcap"  # Replace with your main PCAP file path
+    input_pcap_file = r"ThesisData\attacksplug.pcap"  # Replace with your main PCAP file path
     individual_pcap_directory = r"ThesisData\indiv_pcap_dir"  # Replace with the folder containing PCAP files
     csv_directory = r"ThesisData\csv_files"  # Replace with the folder for saving output files
     excluded_mac_address = "d4:6e:0e:76:ef:10"  # Replace with MAC to exclude, if any

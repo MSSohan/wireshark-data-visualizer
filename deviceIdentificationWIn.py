@@ -93,7 +93,7 @@ if __name__ == "__main__":
     # Normal traffic files for individual devices (each device gets a label)
     labeled_device_files = {
         "Sentry": (r"ThesisData\csv_files\att_sent_uprint_15_1_84_f3_eb_0d_7f_2e.csv", 0),
-        "Uprint": (r"ThesisData\csv_files\att_sent_uprint_15_1_b8_27_eb_d7_50_f4.csv", 1),
+        "Uprint": (r"ThesisData\csv_files\att_sent_uprint_dec_15_b8_27_eb_d7_50_f4.csv", 1),
         "Online Attendance": (r"ThesisData\csv_files\att_sent_uprint_15_1_9c_9c_1f_0c_88_68.csv", 2),
         "Smart Plug": (r"ThesisData\csv_files\smart_plug_software_40_4c_ca_f9_83_fc.csv", 3),
         "Alexa Eco Dot": (r"ThesisData\csv_files\Amazon Alexa Eco Dot 1 BT_1c_fe_2b_98_16_dd.csv", 4),
@@ -132,7 +132,7 @@ if __name__ == "__main__":
 
     # Train-test split (80% train, 20% test)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    print(X)
+    # print(X)
     # Train classifier
     model = RandomForestClassifier(n_estimators=50, random_state=42)
     model.fit(X_train, y_train)
@@ -155,7 +155,7 @@ if __name__ == "__main__":
     ))
 
     # Load the test data (multi-device)
-    test_file_path = r"ThesisData\csv_files\att_sent_uprint_15_1_b8_27_eb_d7_50_f4.csv"
+    test_file_path = r"ThesisData\csv_files\att_sent_uprint_15_1_84_f3_eb_0d_7f_2e.csv"
 
      # File selection for test data
     # test_file_path = select_file()
@@ -178,7 +178,7 @@ if __name__ == "__main__":
 
     # Calculate matching percentages for known devices
     matching_percentages = {}
-    threshold = 0.95  # Confidence threshold for a match
+    threshold = 0.70  # Confidence threshold for a match
 
     for device, (_, label) in labeled_device_files.items():
         total = X_test_data.shape[0]  # Change here to use shape[0] instead of len()
@@ -301,4 +301,42 @@ if __name__ == "__main__":
     plt.xticks(rotation=0, ha='right', fontsize=12)
     plt.yticks(fontsize=12)
     plt.tight_layout()
+    # plt.show()
+
+
+    # Get anomaly predictions (-1 for anomalies, 1 for normal)
+    anomaly_predictions = anomaly_detector.predict(X_test_data)
+
+    # Count normal and anomalous instances
+    total_instances = len(anomaly_predictions)
+    normal_count = sum(anomaly_predictions == 1)
+    anomaly_count = sum(anomaly_predictions == -1)
+
+    # Calculate percentages
+    normal_percentage = (normal_count / total_instances) * 100
+    anomaly_percentage = (anomaly_count / total_instances) * 100
+
+    # Create a dictionary for plotting
+    anomaly_percentages = {
+        "Normal Traffic": normal_percentage,
+        "Anomalous Traffic": anomaly_percentage
+    }
+
+    # Plot bar chart
+    plt.figure(figsize=(5, 6))
+    bars = plt.bar(anomaly_percentages.keys(), anomaly_percentages.values(), color=["green", "red"])
+
+    # Annotate bars with percentage values
+    for bar, percentage in zip(bars, anomaly_percentages.values()):
+        plt.text(bar.get_x() + bar.get_width()/2, bar.get_height(), f"{percentage:.2f}%", 
+                ha='center', va='bottom', fontsize=10, fontweight='bold')
+
+    # Customize plot
+    plt.ylim(0, 100)
+    plt.ylabel("Percentage (%)", fontsize=12)
+    plt.xlabel(best_match_device, fontsize=12)
+    # plt.title("Isolation Forest Anomaly Detection", fontsize=14)
+    plt.grid(axis="y", linestyle="--", alpha=0.7)
+
+    # Show plot
     plt.show()

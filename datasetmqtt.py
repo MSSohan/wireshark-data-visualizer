@@ -41,7 +41,7 @@ def batch_extract_mqtt_tcp_features(pcap_files, output_dir):
         extract_mqtt_tcp_features(pcap_file, output_path)
 
 if __name__ == "__main__":
-    input_pcap_file = r"ThesisData\indiv_pcap_dir\att_sent_uprint_dec_15_2_84_f3_eb_0d_7f_2e.pcap"
+    input_pcap_file = r"ThesisData\indiv_pcap_dir\attacksplug_3e_f8_62_d4_99_eb.pcap"
     csv_output_dir = r"ThesisData\csv_mqtt_tcp_files"
 
     print("Extracting MQTT and TCP features from PCAP files...")
